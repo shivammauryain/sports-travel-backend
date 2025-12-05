@@ -10,6 +10,13 @@ const authenticate = (req, res, next) => {
     });
   }
 
+  if (!env.ADMIN_API_KEY) {
+    return res.status(500).json({
+      success: false,
+      message: "Server configuration error: API key not configured",
+    });
+  }
+
   if (apiKey !== env.ADMIN_API_KEY) {
     return res.status(403).json({
       success: false,

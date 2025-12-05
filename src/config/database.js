@@ -6,6 +6,11 @@ const connectDB = async (retries = 5) => {
   try {
     // Use test database in test environment, otherwise use production database
     const mongoUri = process.env.NODE_ENV === 'test' ? env.MONGODB_URI_TEST : env.MONGODB_URI;
+    
+    if (!mongoUri) {
+      throw new Error(`MongoDB URI not configured for ${process.env.NODE_ENV} environment`);
+    }
+    
     await mongoose.connect(mongoUri);
 
     console.log('MongoDB connected successfully');

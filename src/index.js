@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -27,8 +24,8 @@ app.use(requestIdMiddleware);
 app.use(logger);
 app.use(rateLimiter);
 
-// Connect Database (skip in test mode as tests handle their own connection)
-if (process.env.NODE_ENV !== 'test') {
+// Connect Database 
+if (env.NODE_ENV !== 'test') {
   dbConnect();
 }
 
@@ -41,8 +38,8 @@ app.use('/api/quotes', quoteRoutes);
 // Error Handler
 app.use(errorHandler);
 
-// Start Server (skip in test mode and serverless environments)
-if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+// Start Server 
+if (env.NODE_ENV !== 'test' && !env.VERCEL) {
   const PORT = env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
