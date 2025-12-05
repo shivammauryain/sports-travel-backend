@@ -1,6 +1,6 @@
 class PricingCalculator {
-  constructor(basePrice, travelDate, eventStartDate, numberOfTravelers) {
-    this.basePrice = basePrice;
+  constructor(travelPackage, travelDate, eventStartDate, numberOfTravelers) {
+    this.basePrice = travelPackage.basePrice;
     this.travelDate = new Date(travelDate);
     this.eventStartDate = new Date(eventStartDate);
     this.numberOfTravelers = numberOfTravelers;
