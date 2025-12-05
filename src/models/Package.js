@@ -23,7 +23,7 @@ const packageSchema = new mongoose.Schema(
     duration: {
       type: Number,
       required: true,
-    },
+    }, // duration in days
     accommodationType: {
       type: String,
     },
