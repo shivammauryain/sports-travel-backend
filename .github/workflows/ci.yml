@@ -41,14 +41,14 @@ jobs:
     - name: Create .env file
       run: |
         echo "PORT=3000" >> .env
-        echo "MONGODB_URI=mongodb://localhost:27017/sports-travel-test" >> .env
+        echo "MONGODB_URI_TEST=mongodb://localhost:27017/sports-travel-test" >> .env
         echo "ADMIN_API_KEY=test-api-key-for-ci" >> .env
 
     - name: Run tests
       run: npm test
       env:
         NODE_ENV: test
-        MONGODB_URI: mongodb://localhost:27017/sports-travel-test
+        MONGODB_URI_TEST: mongodb://localhost:27017/sports-travel-test
         ADMIN_API_KEY: test-api-key-for-ci
 
     - name: Upload coverage reports
