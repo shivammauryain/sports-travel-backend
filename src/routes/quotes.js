@@ -1,7 +1,8 @@
-import express from 'express';
-const router = express.Router();
-const { generateQuote } = require('../controllers/quoteController');
+import express from "express";
+import { generateQuote } from "../controllers/quoteController.js";
 
-router.post('/', generateQuote);
+const router = express.Router();
+
+router.post("/generate", generateQuote);
 
 export default router;

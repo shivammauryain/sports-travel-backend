@@ -1,14 +1,21 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 
-import env from './config/env';
-import dbConnect from './config/database';
-import logger from './middleware/logger';
-import errorHandler from './middleware/errorHandler';
-import leadRoutes from './routes/leadRoutes';
-import eventRoutes from './routes/eventRoutes';
-import quoteRoutes from './routes/quoteRoutes';
+import env from './config/env.js';
+import dbConnect from './config/database.js';
+import logger from './middleware/logger.js';
+import rateLimiter from './middleware/rateLimiter.js';
+import errorHandler from './middleware/errorHandler.js';
+import requestIdMiddleware from './middleware/requestId.js';
+
+import healthRoutes from './routes/health.js';
+import leadRoutes from './routes/leads.js';
+import eventRoutes from './routes/events.js';
+import quoteRoutes from './routes/quotes.js';
 
 const app = express();
 
@@ -16,35 +23,29 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(requestIdMiddleware);
 app.use(logger);
+app.use(rateLimiter);
 
-// Database Connection
-dbConnect();
-
-// Health Check Endpoint
-app.get('/health', async (req, res) => {
-  const dbStatus = dbConnect ? 'connected' : 'disconnected';
-  const uptime = process.uptime();
-  
-  res.json({
-    status: 'healthy',
-    uptime: `${Math.floor(uptime)} seconds`,
-    database: dbStatus,
-    timestamp: new Date().toISOString()
-  });
-});
+// Connect Database (skip in test mode as tests handle their own connection)
+if (process.env.NODE_ENV !== 'test') {
+  dbConnect();
+}
 
 // Routes
+app.use('/api/health', healthRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/quotes', quoteRoutes);
 
-// Error Handling
+// Error Handler
 app.use(errorHandler);
 
-// Start Server
-app.listen(env.PORT, () => {
-  console.log(`Server is running on port ${env.PORT}`);
-});
+// Start Server (skip in test mode)
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(env.PORT, () => {
+    console.log(`Server running at http://localhost:${env.PORT}`);
+  });
+}
 
 export default app;

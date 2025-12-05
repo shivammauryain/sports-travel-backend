@@ -1,48 +1,30 @@
-import Event from "../models/Event";
-
-// Create a new event
-export const createEvent = async (req, res) => {
-  try {
-    const event = new Event(req.body);
-    await event.save();
-    res.status(201).json({ success: true, data: event });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+import Event from "../models/Event.js";
+import Package from "../models/Package.js";
+import sendResponse from "../utils/response.js";
 
 // Get all events
 export const getEvents = async (req, res) => {
   try {
     const events = await Event.find().sort({ startDate: 1 });
-    res.status(200).json({ success: true, data: events });
+    return sendResponse(res, 200, true, events, "Events fetched successfully");
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return sendResponse(res, 400, false, null, error.message);
   }
 };
 
-// Update an event
-export const updateEvent = async (req, res) => {
+// Get packages for a specific event
+export const getEventPackages = async (req, res) => {
   try {
-    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { id } = req.params;
+    
+    const event = await Event.findById(id);
     if (!event) {
-      return res.status(404).json({ error: "Event not found" });
+      return sendResponse(res, 404, false, null, "Event not found");
     }
-    res.status(200).json({ success: true, data: event });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
 
-// Delete an event
-export const deleteEvent = async (req, res) => {
-  try {
-    const event = await Event.findByIdAndDelete(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-    res.status(200).json({ success: true, data: event });
+    const packages = await Package.find({ eventId: id }).sort({ basePrice: 1 });
+    return sendResponse(res, 200, true, packages, "Packages fetched successfully");
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return sendResponse(res, 400, false, null, error.message);
   }
 };

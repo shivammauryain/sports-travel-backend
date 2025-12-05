@@ -1,14 +1,23 @@
-import mongoose from "mongoose";
-import env from "./env";
+import mongoose from 'mongoose';
+import env from './env.js';
 
-const dbConnect = async () => {
+// MongoDB Connection with Retry Logic
+const connectDB = async (retries = 5) => {
   try {
-    await mongoose.connect(env.MONGO_URI);
-    console.log("MongoDB connected successfully");
+    await mongoose.connect(env.MONGODB_URI);
+
+    console.log('MongoDB connected successfully');
+
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    if (retries > 0) {
+      console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      return connectDB(retries - 1);
+    }
+
+    console.error('MongoDB connection failed:', error.message);
     process.exit(1);
   }
 };
 
-export default dbConnect;
+export default connectDB;
