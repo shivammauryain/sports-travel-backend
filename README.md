@@ -305,21 +305,48 @@ npm test tests/api.test.js
 
 ## Deployment
 
-### Vercel (Recommended)
+### Production Deployment on Vercel
 
+**Quick Deploy**:
 ```bash
+# Install Vercel CLI
 npm i -g vercel
+
+# Login and deploy
 vercel login
 vercel --prod
 ```
 
-Set environment variables in Vercel dashboard:
-- `MONGODB_URI`
-- `ADMIN_API_KEY`
-- `NODE_ENV=production`
+**Environment Variables** (Required):
+Set these in Vercel Dashboard → Settings → Environment Variables:
+- `MONGODB_URI` - Your MongoDB Atlas connection string
+- `ADMIN_API_KEY` - Secure random string for admin operations  
+- `NODE_ENV` - Set to `production`
 
+**📖 Complete Guide**: See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for:
+- MongoDB Atlas setup
+- Environment configuration
+- Troubleshooting
+- CI/CD integration
 
+**Live URL**: After deployment, your API will be at `https://your-app.vercel.app`
 
+### Alternative Platforms
+
+**Railway.app**:
+```bash
+railway login
+railway init
+railway up
+```
+
+**Render.com**:
+1. Connect GitHub repo
+2. Select "Web Service"
+3. Add environment variables
+4. Deploy
+
+---
 ## Project Structure
 
 ```

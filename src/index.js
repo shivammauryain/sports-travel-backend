@@ -41,10 +41,11 @@ app.use('/api/quotes', quoteRoutes);
 // Error Handler
 app.use(errorHandler);
 
-// Start Server (skip in test mode)
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(env.PORT, () => {
-    console.log(`Server running at http://localhost:${env.PORT}`);
+// Start Server (skip in test mode and serverless environments)
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  const PORT = env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
   });
 }
 

@@ -11,7 +11,8 @@
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "test:watch": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:pricing": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/pricing.test.js",
-    "test:api": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/api.test.js"
+    "test:api": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/api.test.js",
+    "vercel-dev": "vercel dev"
   },
   "keywords": [],
   "author": "Shivam Maurya",
