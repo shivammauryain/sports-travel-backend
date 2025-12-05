@@ -16,7 +16,11 @@ const getEnvVar = (key, defaultValue = undefined) => {
 // Export configuration
 export default {
   PORT: getEnvVar('PORT', 3000),
-  MONGODB_URI: getEnvVar('MONGODB_URI'),
-  MONGODB_URI_TEST: getEnvVar('MONGODB_URI_TEST'),
+  MONGODB_URI: process.env.NODE_ENV === 'test' 
+    ? getEnvVar('MONGODB_URI', undefined) // Optional in test
+    : getEnvVar('MONGODB_URI'), // Required in production
+  MONGODB_URI_TEST: process.env.NODE_ENV === 'test' 
+    ? getEnvVar('MONGODB_URI_TEST') // Required in test
+    : getEnvVar('MONGODB_URI_TEST', undefined), // Optional in production
   ADMIN_API_KEY: getEnvVar('ADMIN_API_KEY')
 };

@@ -4,7 +4,9 @@ import env from './env.js';
 // MongoDB Connection with Retry Logic
 const connectDB = async (retries = 5) => {
   try {
-    await mongoose.connect(env.MONGODB_URI);
+    // Use test database in test environment, otherwise use production database
+    const mongoUri = process.env.NODE_ENV === 'test' ? env.MONGODB_URI_TEST : env.MONGODB_URI;
+    await mongoose.connect(mongoUri);
 
     console.log('MongoDB connected successfully');
 
