@@ -1,5 +1,19 @@
 import mongoose from "mongoose";
 
+const adjustmentSchema = new mongoose.Schema(
+  {
+    value: {
+      type: Number, 
+      default: 0,
+    },
+    percentage: {
+      type: Number, 
+      default: 0,
+    },
+  },
+  { _id: false }
+);
+
 const quoteSchema = new mongoose.Schema(
   {
     leadId: {
@@ -20,21 +34,39 @@ const quoteSchema = new mongoose.Schema(
     basePrice: {
       type: Number,
       required: true,
+      min: [0, "Base price cannot be negative"],
     },
     adjustments: {
-      seasonalMultiplier: { value: Number, percentage: Number },
-      earlyBirdDiscount: { value: Number, percentage: Number },
-      lastMinuteSurcharge: { value: Number, percentage: Number },
-      groupDiscount: { value: Number, percentage: Number },
-      weekendSurcharge: { value: Number, percentage: Number },
+      seasonalMultiplier: {
+        type: adjustmentSchema,
+        default: () => ({}),
+      },
+      earlyBirdDiscount: {
+        type: adjustmentSchema,
+        default: () => ({}),
+      },
+      lastMinuteSurcharge: {
+        type: adjustmentSchema,
+        default: () => ({}),
+      },
+      groupDiscount: {
+        type: adjustmentSchema,
+        default: () => ({}),
+      },
+      weekendSurcharge: {
+        type: adjustmentSchema,
+        default: () => ({}),
+      },
     },
     finalPrice: {
       type: Number,
       required: true,
+      min: [0, "Final price cannot be negative"],
     },
     numberOfTravelers: {
       type: Number,
       required: true,
+      min: [1, "Number of travelers must be at least 1"],
     },
     travelDate: {
       type: Date,
@@ -45,7 +77,11 @@ const quoteSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
+
+quoteSchema.index({ leadId: 1, createdAt: -1 });
 
 export default mongoose.model("Quote", quoteSchema);
