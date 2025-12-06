@@ -17,7 +17,7 @@ import quoteRoutes from './routes/quotes.js';
 import authRoutes from './routes/auth.js';
 import dashboardRoutes from './routes/dashboard.js';
 
-
+// Initialize Express app
 const app = express();
 
 // Middleware
