@@ -48,7 +48,12 @@ if (env.NODE_ENV !== 'test') {
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Sports Travel API is running', status: 'ok' });
+  res.json({ 
+    message: 'Sports Travel API is running', 
+    status: 'ok', 
+    env: env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
 });
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
