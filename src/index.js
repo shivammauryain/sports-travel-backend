@@ -39,8 +39,8 @@ if (env.NODE_ENV !== 'test') {
 }
 
 // Routes
-app.use('/', (req, res) => {
-  res.send('Sports Travel Authentication API is running');
+app.get('/', (req, res) => {
+  res.json({ message: 'Sports Travel API is running', status: 'ok' });
 });
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
