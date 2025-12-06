@@ -76,6 +76,15 @@ const quoteSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["Draft", "Sent", "Accepted", "Rejected", "Expired"],
+      default: "Draft",
+    },
+    notes: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
@@ -83,5 +92,6 @@ const quoteSchema = new mongoose.Schema(
 );
 
 quoteSchema.index({ leadId: 1, createdAt: -1 });
+quoteSchema.index({ status: 1 });
 
 export default mongoose.model("Quote", quoteSchema);

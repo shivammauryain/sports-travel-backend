@@ -1,8 +1,8 @@
 
-export default function sendResponse(res, statusCode, success, data = null, message = "") {
+export default function sendResponse(res, statusCode, success, message = "", data = null) {
   return res.status(statusCode).json({
     success,
-    data,
     message,
+    data,
   });
 }

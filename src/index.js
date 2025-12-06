@@ -12,13 +12,22 @@ import requestIdMiddleware from './middleware/requestId.js';
 import healthRoutes from './routes/health.js';
 import leadRoutes from './routes/leads.js';
 import eventRoutes from './routes/events.js';
+import packageRoutes from './routes/packages.js';
 import quoteRoutes from './routes/quotes.js';
+import authRoutes from './routes/auth.js';
+import dashboardRoutes from './routes/dashboard.js';
+
 
 const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: env.ORIGIN_URL.split(',').map(url => url.trim()),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID']
+}));
 app.use(express.json());
 app.use(requestIdMiddleware);
 app.use(logger);
@@ -31,9 +40,12 @@ if (env.NODE_ENV !== 'test') {
 
 // Routes
 app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/packages', packageRoutes);
 app.use('/api/quotes', quoteRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Error Handler
 app.use(errorHandler);

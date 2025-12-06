@@ -43,6 +43,11 @@ jobs:
         echo "PORT=3000" >> .env
         echo "MONGODB_URI_TEST=mongodb://localhost:27017/sports-travel-test" >> .env
         echo "ADMIN_API_KEY=test-api-key-for-ci" >> .env
+        echo "JWT_SECRET=test-jwt-secret-key-for-ci-testing" >> .env
+        echo "ORIGIN_URL=http://localhost:3000" >> .env
+        echo "EMAIL_USER=test@example.com" >> .env
+        echo "EMAIL_PASS=test-password" >> .env
+        echo "RECEIVER_EMAIL=test@example.com" >> .env
 
     - name: Run tests
       run: npm test
@@ -50,6 +55,11 @@ jobs:
         NODE_ENV: test
         MONGODB_URI_TEST: mongodb://localhost:27017/sports-travel-test
         ADMIN_API_KEY: test-api-key-for-ci
+        JWT_SECRET: test-jwt-secret-key-for-ci-testing
+        ORIGIN_URL: http://localhost:3000
+        EMAIL_USER: test@example.com
+        EMAIL_PASS: test-password
+        RECEIVER_EMAIL: test@example.com
 
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
