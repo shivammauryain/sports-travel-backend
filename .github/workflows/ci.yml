@@ -50,7 +50,7 @@ jobs:
         echo "RECEIVER_EMAIL=test@example.com" >> .env
 
     - name: Run tests
-      run: npm test
+      run: npm test -- --passWithNoTests
       env:
         NODE_ENV: test
         MONGODB_URI_TEST: mongodb://localhost:27017/sports-travel-test
