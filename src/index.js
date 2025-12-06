@@ -22,8 +22,14 @@ const app = express();
 
 // Middleware
 app.use(helmet());
+
+// CORS configuration with fallback
+const allowedOrigins = env.ORIGIN_URL 
+  ? env.ORIGIN_URL.split(',').map(url => url.trim()).filter(url => url)
+  : ['http://localhost:3000'];
+
 app.use(cors({
-  origin: env.ORIGIN_URL.split(',').map(url => url.trim()),
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID']
@@ -35,7 +41,9 @@ app.use(rateLimiter);
 
 // Connect Database 
 if (env.NODE_ENV !== 'test') {
-  dbConnect();
+  dbConnect().catch(err => {
+    console.error('Failed to connect to database:', err);
+  });
 }
 
 // Routes
