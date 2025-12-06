@@ -39,12 +39,24 @@ app.use(requestIdMiddleware);
 app.use(logger);
 app.use(rateLimiter);
 
-// Connect Database 
-if (env.NODE_ENV !== 'test') {
-  dbConnect().catch(err => {
-    console.error('Failed to connect to database:', err);
-  });
-}
+// Database Connection Middleware
+app.use(async (req, res, next) => {
+  if (env.NODE_ENV === 'test') {
+    return next();
+  }
+  
+  try {
+    await dbConnect();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return res.status(503).json({
+      success: false,
+      message: 'Database connection unavailable',
+      data: null
+    });
+  }
+});
 
 // Routes
 app.get('/', (req, res) => {

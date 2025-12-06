@@ -3,11 +3,15 @@ import env from './env.js';
 
 let isConnected = false;
 
+// Disable buffering for serverless
+mongoose.set('bufferCommands', false);
+mongoose.set('bufferTimeoutMS', 30000);
+
 // MongoDB Connection optimized for Serverless
 const connectDB = async () => {
   if (isConnected && mongoose.connection.readyState === 1) {
     console.log('Using existing MongoDB connection');
-    return;
+    return mongoose.connection;
   }
 
   try {
@@ -18,13 +22,18 @@ const connectDB = async () => {
       throw new Error(`MongoDB URI not configured`);
     }
     
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      maxIdleTimeMS: 30000,
     });
 
     isConnected = true;
     console.log('MongoDB connected successfully');
+    
+    return conn;
 
   } catch (error) {
     console.error('MongoDB connection failed:', error.message);
