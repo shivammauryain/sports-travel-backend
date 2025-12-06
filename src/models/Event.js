@@ -41,6 +41,10 @@ const eventSchema = new mongoose.Schema(
       enum: ["Cricket", "Football", "Tennis", "F1", "Other"],
       default: "Other",
     },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

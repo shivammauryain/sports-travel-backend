@@ -1,7 +1,7 @@
 import Lead from "../models/Lead.js";
 import LeadStatusHistory from "../models/LeadStatusHistory.js";
 import sendResponse from "../utils/response.js";
-import { validStatusTransitions, validateLead } from "../utils/validators.js";
+import { validateLead } from "../utils/validators.js";
 
 // Create a new lead
 export const createLead = async (req, res) => {
@@ -53,7 +53,7 @@ export const getLeads = async (req, res) => {
 
     const count = await Lead.countDocuments(filter);
 
-    return sendResponse(res, 200, true, {
+    return sendResponse(res, 200, true, "Leads retrieved successfully", {
       leads,
       pagination: {
         total: count,
@@ -62,46 +62,102 @@ export const getLeads = async (req, res) => {
       },
     });
   } catch (error) {
-    return sendResponse(res, 500, false, null, error.message);
+    return sendResponse(res, 500, false, error.message, null);
   }
 };
 
-// Update lead status
-export const updateLeadStatus = async (req, res) => {
+// Get single lead by ID
+export const getLeadById = async (req, res) => {
   const { id } = req.params;
-  const { status, notes = "" } = req.body;
-
   try {
-    const lead = await Lead.findById(id);
+    const lead = await Lead.findById(id)
+      .populate("eventId")
+      .populate("packageId");
+
     if (!lead) {
       return sendResponse(res, 404, false, null, "Lead not found");
     }
 
-    const validTransitions = validStatusTransitions[lead.status] || [];
-
-    if (!validTransitions.includes(status)) {
-      return sendResponse(
-        res,
-        400,
-        false,
-        null,
-        `Invalid status transition from ${lead.status} to ${status}`
-      );
-    }
-
-    const oldStatus = lead.status;
-    lead.status = status;
-    await lead.save();
-
-    await LeadStatusHistory.create({
-      leadId: lead._id,
-      fromStatus: oldStatus,
-      toStatus: status,
-      notes,
-    });
-
-    return sendResponse(res, 200, true, lead, "Lead status updated");
+    return sendResponse(res, 200, true, lead, "Lead retrieved successfully");
   } catch (error) {
     return sendResponse(res, 500, false, null, error.message);
+  }
+};
+// Delete lead by ID
+export const deleteLead = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const lead = await Lead.findByIdAndDelete(id);
+    if (!lead) {
+      return sendResponse(res, 404, false, null, "Lead not found");
+    }
+    
+    // Also delete status history
+    await LeadStatusHistory.deleteMany({ leadId: id });
+    
+    return sendResponse(res, 200, true, null, "Lead deleted successfully");
+  } catch (error) {
+    return sendResponse(res, 500, false, null, error.message);
+  }
+};
+
+// Update lead
+export const updateLead = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const oldLead = await Lead.findById(id);
+    if (!oldLead) {
+      return sendResponse(res, 404, false, null, "Lead not found");
+    }
+
+    const validation = validateLead(req.body);
+    if (!validation.isValid) {
+      return sendResponse(res, 400, false, null, validation.errors);
+    }
+
+    const lead = await Lead.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    }).populate('eventId').populate('packageId');
+
+    // Track status change if status was updated
+    if (req.body.status && req.body.status !== oldLead.status) {
+      await LeadStatusHistory.create({
+        leadId: lead._id,
+        fromStatus: oldLead.status,
+        toStatus: req.body.status,
+        notes: req.body.statusNotes || `Status updated to ${req.body.status}`,
+      });
+    }
+
+    return sendResponse(res, 200, true, lead, "Lead updated successfully");
+  } catch (error) {
+    return sendResponse(res, 500, false, null, error.message);
+  }
+};
+
+// Get lead status history
+export const getLeadStatusHistory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const lead = await Lead.findById(id);
+    if (!lead) {
+      return sendResponse(res, 404, false, "Lead not found", null);
+    }
+
+    const history = await LeadStatusHistory.find({ leadId: id })
+      .sort({ createdAt: -1 });
+
+    return sendResponse(res, 200, true, "Status history retrieved", {
+      lead: {
+        id: lead._id,
+        name: lead.name,
+        email: lead.email,
+        currentStatus: lead.status
+      },
+      history
+    });
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message, null);
   }
 };

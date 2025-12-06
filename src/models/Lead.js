@@ -27,7 +27,7 @@ const leadSchema = new mongoose.Schema(
     packageId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Package",
-      default: null,
+      required: true,
     },
     numberOfTravelers: {
       type: Number,

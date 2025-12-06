@@ -5,7 +5,7 @@ const packageSchema = new mongoose.Schema(
     eventId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
-      required: true,
+      required: [true, "Event ID is required"],
     },
     name: {
       type: String,
@@ -22,13 +22,21 @@ const packageSchema = new mongoose.Schema(
       required: true,
       min: [0, "Base price cannot be negative"],
     },
+    features: {
+      type: [String],
+      default: [],
+    },
     inclusions: {
       type: [String],
       default: [],
     },
+    tier: {
+      type: String,
+      enum: ["Premium", "Standard", "Basic", "Economy"],
+      default: "Standard",
+    },
     duration: {
       type: Number, // in days
-      required: true,
       min: [1, "Duration must be at least 1"],
     },
     accommodationType: {
@@ -37,6 +45,7 @@ const packageSchema = new mongoose.Schema(
     },
     maxTravelers: {
       type: Number,
+      required: true,
       min: [1, "Max travelers must be at least 1"],
     },
   },
@@ -46,5 +55,6 @@ const packageSchema = new mongoose.Schema(
 );
 
 packageSchema.index({ eventId: 1 });
+packageSchema.index({ eventId: 1, tier: 1 }, { unique: true });
 
 export default mongoose.model("Package", packageSchema);

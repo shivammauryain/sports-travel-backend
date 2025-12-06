@@ -1,22 +1,35 @@
 import mongoose from 'mongoose';
 import env from './env.js';
 
-// MongoDB Connection with Retry Logic
-const connectDB = async (retries = 5) => {
-  try {
-    await mongoose.connect(env.MONGODB_URI);
+let isConnected = false;
 
+// MongoDB Connection optimized for Serverless
+const connectDB = async () => {
+  if (isConnected && mongoose.connection.readyState === 1) {
+    console.log('Using existing MongoDB connection');
+    return;
+  }
+
+  try {
+    const mongoUri = process.env.NODE_ENV === 'test' ? env.MONGODB_URI_TEST : env.MONGODB_URI;
+    
+    if (!mongoUri) {
+      console.error(`MongoDB URI not configured for ${process.env.NODE_ENV} environment`);
+      throw new Error(`MongoDB URI not configured`);
+    }
+    
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    isConnected = true;
     console.log('MongoDB connected successfully');
 
   } catch (error) {
-    if (retries > 0) {
-      console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      return connectDB(retries - 1);
-    }
-
     console.error('MongoDB connection failed:', error.message);
-    process.exit(1);
+    isConnected = false;
+    throw error;
   }
 };
 

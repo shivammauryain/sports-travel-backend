@@ -1,28 +1,22 @@
-// src/utils/pricingCalculator.js
 
 class PricingCalculator {
-  /**
-   * @param {Object} travelPackage - Package document
-   * @param {Date | string} travelDate
-   * @param {Date | string} eventStartDate
-   * @param {number} numberOfTravelers
-   */
   constructor(travelPackage, travelDate, eventStartDate, numberOfTravelers) {
-    this.basePrice = travelPackage.basePrice; // per traveler or total – your business logic
+    this.basePrice = travelPackage.basePrice;
     this.travelDate = new Date(travelDate);
     this.eventStartDate = new Date(eventStartDate);
     this.numberOfTravelers = numberOfTravelers;
     this.adjustments = {};
   }
 
+  // Seasonal multiplier: +20% for June, July, December; +10% for April, May, September
   calculateSeasonalMultiplier() {
-    const month = this.eventStartDate.getMonth() + 1; // 1-12
+    const month = this.eventStartDate.getMonth() + 1; 
     let percentage = 0;
 
     if ([6, 7, 12].includes(month)) {
-      percentage = 20; // June, July, December
+      percentage = 20;
     } else if ([4, 5, 9].includes(month)) {
-      percentage = 10; // April, May, September
+      percentage = 10;
     }
 
     const value = (this.basePrice * percentage) / 100;
@@ -30,6 +24,7 @@ class PricingCalculator {
     return value;
   }
 
+  // Early bird discount: -10% if booked 120 days in advance
   calculateEarlyBirdDiscount() {
     const daysUntilEvent = Math.floor(
       (this.eventStartDate - this.travelDate) / (1000 * 60 * 60 * 24)
@@ -46,6 +41,7 @@ class PricingCalculator {
     return 0;
   }
 
+  // Last minute surcharge: +25% if less than 15 days until event
   calculateLastMinuteSurcharge() {
     const daysUntilEvent = Math.floor(
       (this.eventStartDate - this.travelDate) / (1000 * 60 * 60 * 24)
@@ -62,6 +58,7 @@ class PricingCalculator {
     return 0;
   }
 
+  // Group discount: -8% if 4 or more travelers
   calculateGroupDiscount() {
     if (this.numberOfTravelers >= 4) {
       const percentage = 8;
@@ -74,10 +71,10 @@ class PricingCalculator {
     return 0;
   }
 
+  // Weekend surcharge: +8% if event starts on Saturday or Sunday
   calculateWeekendSurcharge() {
     const dayOfWeek = this.eventStartDate.getDay();
 
-    // Saturday (6) or Sunday (0)
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       const percentage = 8;
       const value = (this.basePrice * percentage) / 100;
@@ -89,9 +86,7 @@ class PricingCalculator {
     return 0;
   }
 
-  /**
-   * Internal calculator
-   */
+  // Main calculation method
   calculate() {
     let totalPrice = this.basePrice;
 
@@ -108,9 +103,6 @@ class PricingCalculator {
     };
   }
 
-  /**
-   * Public API used in controller: calculator.calculateFinalPrice()
-   */
   calculateFinalPrice() {
     return this.calculate();
   }
