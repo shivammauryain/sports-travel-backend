@@ -2,6 +2,26 @@
 
 A robust RESTful API built with Express.js and MongoDB for managing sports travel bookings, events, packages, and customer relationships. This backend powers the Sports Travel platform with comprehensive admin controls and real-time analytics.
 
+## 🌐 Live API
+
+**API Base URL**: [https://sports-travel-backend.vercel.app](https://sports-travel-backend.vercel.app)
+
+**Frontend Application**: [https://travel-gamma-ruby-17.vercel.app](https://travel-gamma-ruby-17.vercel.app)
+
+### Demo Admin Credentials
+For testing the API with authentication:
+
+```json
+{
+  "email": "admin@sportstravel.com",
+  "password": "Admin@123"
+}
+```
+
+**Login Endpoint**: `POST /api/auth/login`
+
+> **Note**: These are demo credentials for testing purposes only.
+
 ## Features
 
 - **Authentication & Authorization**: JWT-based secure authentication with role-based access control
